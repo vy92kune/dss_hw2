@@ -1,30 +1,46 @@
-import unittest
-from math_quiz import function_A, function_B, function_C
+import random
 
+def generate_problem():
+    """Generates a random math problem and its answer."""
+    num1 = random.randint(1, 10)
+    num2 = random.randint(1, 5)
+    operator = random.choice(['+', '-', '*'])
 
-class TestMathGame(unittest.TestCase):
+    problem = f"{num1} {operator} {num2}"
+    
+    if operator == '+':
+        answer = num1 + num2
+    elif operator == '-':
+        answer = num1 - num2
+    else:
+        answer = num1 * num2
 
-    def test_function_A(self):
-        # Test if random numbers generated are within the specified range
-        min_val = 1
-        max_val = 10
-        for _ in range(1000):  # Test a large number of random values
-            rand_num = function_A(min_val, max_val)
-            self.assertTrue(min_val <= rand_num <= max_val)
+    return problem, answer
 
-    def test_function_B(self):
-        # TODO
-        pass
+def math_quiz(num_questions=10):
+    """Conducts a math quiz with the specified number of questions."""
+    score = 0
 
-    def test_function_C(self):
-            test_cases = [
-                (5, 2, '+', '5 + 2', 7),
-                ''' TODO add more test cases here '''
-            ]
+    print("Welcome to the Math Quiz!")
+    print("Solve the math problems and enter your answers.")
 
-            for num1, num2, operator, expected_problem, expected_answer in test_cases:
-                # TODO
-                pass
+    for _ in range(num_questions):
+        problem, answer = generate_problem()
+        print(f"\nQuestion: {problem}")
+
+        try:
+            user_answer = int(input("Your answer: "))
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+            continue
+
+        if user_answer == answer:
+            print("Correct!")
+            score += 1
+        else:
+            print(f"Incorrect. The answer is {answer}.")
+
+    print(f"\nQuiz over! Your score is: {score}/{num_questions}")
 
 if __name__ == "__main__":
-    unittest.main()
+    math_quiz()
