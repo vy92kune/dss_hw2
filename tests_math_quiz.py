@@ -1,46 +1,37 @@
-import random
+class TestMathQuiz(unittest.TestCase):
 
-def generate_problem():
-    """Generates a random math problem and its answer."""
-    num1 = random.randint(1, 10)
-    num2 = random.randint(1, 5)
-    operator = random.choice(['+', '-', '*'])
+    def test_generate_math_problem(self):
+        """Test that generate_math_problem returns a string and an integer."""
+        problem, solution = generate_math_problem()
+        self.assertIsInstance(problem, str)
+        self.assertIsInstance(solution, int)
 
-    problem = f"{num1} {operator} {num2}"
-    
-    if operator == '+':
-        answer = num1 + num2
-    elif operator == '-':
-        answer = num1 - num2
-    else:
-        answer = num1 * num2
+    @patch('builtins.input', side_effect=['3', '5', '7', '9'])
+    @patch('random.randint', side_effect=[1, 2, 2, 3, 3, 4, 4, 5])  # Control numbers for predictability
+    @patch('random.choice', side_effect=['+', '+', '+', '+'])  # Control operators for predictability
+    def test_correct_answers(self, mock_input, mock_randint, mock_choice):
+        """Test the quiz with all correct answers."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            score = conduct_math_quiz(4)
+        self.assertEqual(score, 4)
 
-    return problem, answer
+    @patch('builtins.input', side_effect=['0', '0', '0', '0'])
+    @patch('random.randint', side_effect=[1, 2, 2, 3, 3, 4, 4, 5])
+    @patch('random.choice', side_effect=['+', '+', '+', '+'])
+    def test_incorrect_answers(self, mock_input, mock_randint, mock_choice):
+        """Test the quiz with all incorrect answers."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            score = conduct_math_quiz(4)
+        self.assertEqual(score, 0)
 
-def math_quiz(num_questions=10):
-    """Conducts a math quiz with the specified number of questions."""
-    score = 0
+    @patch('builtins.input', side_effect=['a', 'b', 'c', 'd'])
+    @patch('random.randint', side_effect=[1, 2, 2, 3, 3, 4, 4, 5])
+    @patch('random.choice', side_effect=['+', '+', '+', '+'])
+    def test_invalid_input(self, mock_input, mock_randint, mock_choice):
+        """Test the quiz with invalid inputs."""
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            score = conduct_math_quiz(4)
+            self.assertIn("Invalid input. Please enter a number.", fake_out.getvalue())
 
-    print("Welcome to the Math Quiz!")
-    print("Solve the math problems and enter your answers.")
-
-    for _ in range(num_questions):
-        problem, answer = generate_problem()
-        print(f"\nQuestion: {problem}")
-
-        try:
-            user_answer = int(input("Your answer: "))
-        except ValueError:
-            print("Invalid input. Please enter a number.")
-            continue
-
-        if user_answer == answer:
-            print("Correct!")
-            score += 1
-        else:
-            print(f"Incorrect. The answer is {answer}.")
-
-    print(f"\nQuiz over! Your score is: {score}/{num_questions}")
-
-if __name__ == "__main__":
-    math_quiz()
+if _name_ == "_main_":
+    unittest.main()
